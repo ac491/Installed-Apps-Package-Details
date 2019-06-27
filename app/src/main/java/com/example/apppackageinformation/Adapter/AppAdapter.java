@@ -1,6 +1,12 @@
 package com.example.apppackageinformation.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -11,18 +17,21 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.apppackageinformation.Activity.MainActivity;
 import com.example.apppackageinformation.Model.AppDetails;
 import com.example.apppackageinformation.R;
 
+import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppViewHolder> {
 
-    private Context mContex;
+    private Context mContext;
     private ArrayList<AppDetails> mAppDetailsList;
 
-    public AppAdapter(Context mContex, ArrayList<AppDetails> mAppDetailsList) {
-        this.mContex = mContex;
+    public AppAdapter(Context mContext, ArrayList<AppDetails> mAppDetailsList) {
+        this.mContext = mContext;
         this.mAppDetailsList = mAppDetailsList;
     }
 
@@ -36,8 +45,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AppViewHolder appViewHolder, int i) {
-        AppDetails appDetails = mAppDetailsList.get(i);
+    public void onBindViewHolder(@NonNull AppViewHolder appViewHolder, final int i) {
+        final AppDetails appDetails = mAppDetailsList.get(i);
         appViewHolder.appName.setText(appDetails.getAppName());
         appViewHolder.packageName.setText(appDetails.getPackageName());
         appViewHolder.appIcon.setImageDrawable(appDetails.getAppIcon());
@@ -46,6 +55,17 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppViewHolder> {
             public void onClick(View view) {
                 //intent to main activity
                 Log.d("TAG", "Clicked");
+                Bitmap bitmap = ((BitmapDrawable)appDetails.getAppIcon()).getBitmap();
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] bitmapdata = stream.toByteArray();
+                Intent intent = new Intent(mContext, MainActivity.class);
+                Bundle b = new Bundle();
+                b.putParcelable("appDetails", (Parcelable) appDetails);
+                b.putByteArray("icon", bitmapdata);
+                intent.putExtras(b);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                mContext.startActivity(intent);
             }
         });
     }
