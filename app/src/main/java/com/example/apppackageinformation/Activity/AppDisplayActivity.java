@@ -1,11 +1,13 @@
 package com.example.apppackageinformation.Activity;
 
+import android.app.ProgressDialog;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,8 +26,7 @@ import java.util.List;
 public class AppDisplayActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
-    private ProgressBar mProgress;
-    private ArrayList<AppDetails> installedAppDetails;
+    ProgressDialog mProgressDoalog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,34 +34,9 @@ public class AppDisplayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_app_display);
 
         mRecyclerView = findViewById(R.id.recycler_view);
-        mProgress = findViewById(R.id.progress);
         mRecyclerView.setVisibility(View.INVISIBLE);
-        installedAppDetails = new ArrayList<>();
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                installedAppDetails = getInstalledAppsDetails();
-            }
-        });
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        final AppAdapter adapter = new AppAdapter(this, installedAppDetails);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                mProgress.setVisibility(View.GONE);
-                mRecyclerView.setVisibility(View.VISIBLE);
-                mRecyclerView.setAdapter(adapter);
-            }
-        });
+        new AppsFetchAsync().execute();
     }
 
     private ArrayList<AppDetails> getInstalledAppsDetails(){
@@ -112,5 +88,39 @@ public class AppDisplayActivity extends AppCompatActivity {
         return installedAppDetails;
     }
 
+    public class AppsFetchAsync extends AsyncTask<Void, Integer, ArrayList<AppDetails>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDoalog = new ProgressDialog(AppDisplayActivity.this);
+            mProgressDoalog.setMessage("Loading installed apps' details...");
+            mProgressDoalog.setTitle("Loading");
+            mProgressDoalog.setCancelable(false);
+            mProgressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDoalog.show();
+        }
+
+        @Override
+        protected ArrayList<AppDetails> doInBackground(Void... voids) {
+            return getInstalledAppsDetails();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<AppDetails> appDetails) {
+            super.onPostExecute(appDetails);
+            mProgressDoalog.dismiss();
+            final AppAdapter adapter = new AppAdapter(AppDisplayActivity.this, appDetails);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(AppDisplayActivity.this);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+            mRecyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                    mRecyclerView.setAdapter(adapter);
+                }
+            });
+        }
+    }
 
 }
