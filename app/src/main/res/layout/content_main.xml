@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,7 +8,10 @@
     tools:context=".Activity.MainActivity"
     tools:showIn="@layout/activity_main"
     android:orientation="vertical">
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,4 +40,58 @@
         android:layout_margin="10dp"
         android:background="#c0c0c0"/>
 
+    <TextView
+        android:id="@+id/permissionsTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:text="@string/app_permissions"
+        android:padding="10dp"/>
+    <ListView
+        android:id="@+id/permissionsLv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_margin="10dp"
+        android:background="#c0c0c0"/>
+
+    <TextView
+        android:id="@+id/recieversTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:text="@string/recievers"
+        android:padding="10dp"/>
+    <ListView
+        android:id="@+id/recieversLv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_margin="10dp"
+        android:background="#c0c0c0"/>
+
+    <TextView
+        android:id="@+id/serviceTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:text="@string/services"
+        android:padding="10dp"/>
+    <ListView
+        android:id="@+id/serviceLv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 </LinearLayout>
+
+</ScrollView>

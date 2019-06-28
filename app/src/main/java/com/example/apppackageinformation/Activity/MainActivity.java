@@ -1,6 +1,8 @@
 package com.example.apppackageinformation.Activity;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -14,7 +16,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.apppackageinformation.Model.AppDetails;
@@ -24,6 +28,12 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView mIconImageView;
     private TextView mAppNameTextView;
+    private ListView mPermissionsListView;
+    private ListView mRecieversListView;
+    private ListView mServicesListView;
+    private TextView mPermissionTextView;
+    private TextView mRecieversTextView;
+    private TextView mServicesTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +44,12 @@ public class MainActivity extends AppCompatActivity {
 
         mIconImageView = findViewById(R.id.image_icon);
         mAppNameTextView = findViewById(R.id.AppTitle);
+        mPermissionsListView = findViewById(R.id.permissionsLv);
+        mRecieversListView = findViewById(R.id.recieversLv);
+        mServicesListView = findViewById(R.id.serviceLv);
+        mPermissionTextView = findViewById(R.id.permissionsTv);
+        mRecieversTextView = findViewById(R.id.recieversTv);
+        mServicesTextView = findViewById(R.id.serviceTv);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -53,12 +69,57 @@ public class MainActivity extends AppCompatActivity {
             if(byteArray != null) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                 appIcon = new BitmapDrawable(getResources(), bitmap);
+            } else {
+                mIconImageView.setVisibility(View.GONE);
             }
         }
         if (appDetails != null) {
             Log.d("TAG", "name" + appDetails.getAppName());
             mIconImageView.setImageDrawable(appIcon);
             mAppNameTextView.setText(appDetails.getAppName());
+
+            if (appDetails.getAppPermissions() != null) {
+                ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, appDetails.getAppPermissions());
+                mPermissionsListView.setAdapter(itemsAdapter);
+            } else {
+                mPermissionTextView.setVisibility(View.GONE);
+                mPermissionsListView.setVisibility(View.GONE);
+            }
+
+            if (appDetails.getAppRecievers() != null) {
+                String recievers[] = new String[appDetails.getAppRecievers().length];
+                int i = 0;
+                for (ActivityInfo activityInfo : appDetails.getAppRecievers()) {
+                    recievers[i] = activityInfo.name;
+                    i++;
+                }
+                ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, recievers);
+                mRecieversListView.setAdapter(itemsAdapter);
+            } else {
+                mRecieversTextView.setVisibility(View.GONE);
+                mRecieversListView.setVisibility(View.GONE);
+            }
+
+            if (appDetails.getAppServices() != null) {
+                String services[] = new String[appDetails.getAppServices().length];
+                int i = 0;
+                for (ServiceInfo serviceInfo : appDetails.getAppServices()) {
+                    services[i] = serviceInfo.name;
+                    i++;
+                }
+                ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, services);
+                mServicesListView.setAdapter(itemsAdapter);
+            } else {
+                mServicesTextView.setVisibility(View.GONE);
+                mServicesListView.setVisibility(View.GONE);
+            }
+        } else {
+            mRecieversListView.setVisibility(View.GONE);
+            mRecieversTextView.setVisibility(View.GONE);
+            mServicesTextView.setVisibility(View.GONE);
+            mServicesListView.setVisibility(View.GONE);
+            mPermissionsListView.setVisibility(View.GONE);
+            mPermissionTextView.setVisibility(View.GONE);
         }
 
     }
