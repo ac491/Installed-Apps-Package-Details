@@ -50,8 +50,10 @@ public class MainActivity extends AppCompatActivity {
         if(extras != null){
             appDetails = (AppDetails) extras.getParcelable("appDetails");
             byte[] byteArray = getIntent().getByteArrayExtra("icon");
-            Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-            appIcon = new BitmapDrawable(getResources(), bitmap);
+            if(byteArray != null) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                appIcon = new BitmapDrawable(getResources(), bitmap);
+            }
         }
         if (appDetails != null) {
             Log.d("TAG", "name" + appDetails.getAppName());
