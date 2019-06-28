@@ -7,11 +7,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.text.HtmlCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -24,16 +28,21 @@ import android.widget.TextView;
 import com.example.apppackageinformation.Model.AppDetails;
 import com.example.apppackageinformation.R;
 
+import org.xml.sax.XMLReader;
+
 public class MainActivity extends AppCompatActivity {
 
     private ImageView mIconImageView;
     private TextView mAppNameTextView;
-    private ListView mPermissionsListView;
-    private ListView mRecieversListView;
-    private ListView mServicesListView;
+    private TextView mPermissionsList;
+    private TextView mRecieversList;
+    private TextView mServicesList;
     private TextView mPermissionTextView;
     private TextView mRecieversTextView;
     private TextView mServicesTextView;
+    private View mLine1;
+    private View mLine2;
+    private View mLine3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +53,15 @@ public class MainActivity extends AppCompatActivity {
 
         mIconImageView = findViewById(R.id.image_icon);
         mAppNameTextView = findViewById(R.id.AppTitle);
-        mPermissionsListView = findViewById(R.id.permissionsLv);
-        mRecieversListView = findViewById(R.id.recieversLv);
-        mServicesListView = findViewById(R.id.serviceLv);
+        mPermissionsList = findViewById(R.id.permissionsLv);
+        mRecieversList = findViewById(R.id.recieversLv);
+        mServicesList = findViewById(R.id.serviceLv);
         mPermissionTextView = findViewById(R.id.permissionsTv);
         mRecieversTextView = findViewById(R.id.recieversTv);
         mServicesTextView = findViewById(R.id.serviceTv);
+        mLine1 = findViewById(R.id.lineView1);
+        mLine2 = findViewById(R.id.lineView2);
+        mLine3 = findViewById(R.id.lineView3);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -79,11 +91,22 @@ public class MainActivity extends AppCompatActivity {
             mAppNameTextView.setText(appDetails.getAppName());
 
             if (appDetails.getAppPermissions() != null) {
-                ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, appDetails.getAppPermissions());
-                mPermissionsListView.setAdapter(itemsAdapter);
+                //ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, appDetails.getAppPermissions());
+                String message = "<html><body>";
+                for (String permission : appDetails.getAppPermissions()) {
+                    message += "- " + permission + "<br/><br/>";
+                }
+                message += "</body></html>";
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    mPermissionsList.setText(Html.fromHtml(message, Html.FROM_HTML_MODE_COMPACT));
+                } else {
+                    mPermissionsList.setText(Html.fromHtml(message));
+                }
             } else {
                 mPermissionTextView.setVisibility(View.GONE);
-                mPermissionsListView.setVisibility(View.GONE);
+                mPermissionsList.setVisibility(View.GONE);
+                mLine1.setVisibility(View.GONE);
             }
 
             if (appDetails.getAppRecievers() != null) {
@@ -93,11 +116,22 @@ public class MainActivity extends AppCompatActivity {
                     recievers[i] = activityInfo.name;
                     i++;
                 }
-                ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, recievers);
-                mRecieversListView.setAdapter(itemsAdapter);
+                //ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, recievers);
+                String message = "<html><body>";
+                for (String reciever : recievers) {
+                    message += "- " + reciever + "<br/><br/>";
+                }
+                message += "</body></html>";
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    mRecieversList.setText(Html.fromHtml(message, Html.FROM_HTML_MODE_COMPACT));
+                } else {
+                    mRecieversList.setText(Html.fromHtml(message));
+                }
             } else {
                 mRecieversTextView.setVisibility(View.GONE);
-                mRecieversListView.setVisibility(View.GONE);
+                mRecieversList.setVisibility(View.GONE);
+                mLine2.setVisibility(View.GONE);
             }
 
             if (appDetails.getAppServices() != null) {
@@ -107,19 +141,33 @@ public class MainActivity extends AppCompatActivity {
                     services[i] = serviceInfo.name;
                     i++;
                 }
-                ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, services);
-                mServicesListView.setAdapter(itemsAdapter);
+                //ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, services);
+                String message = "<html><body>";
+                for (String service : services) {
+                    message += "- " + service + "<br/><br/>";
+                }
+                message += "</body></html>";
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    mServicesList.setText(Html.fromHtml(message, Html.FROM_HTML_MODE_COMPACT));
+                } else {
+                    mServicesList.setText(Html.fromHtml(message));
+                }
             } else {
                 mServicesTextView.setVisibility(View.GONE);
-                mServicesListView.setVisibility(View.GONE);
+                mServicesList.setVisibility(View.GONE);
+                mLine3.setVisibility(View.GONE);
             }
         } else {
-            mRecieversListView.setVisibility(View.GONE);
+            mRecieversList.setVisibility(View.GONE);
             mRecieversTextView.setVisibility(View.GONE);
             mServicesTextView.setVisibility(View.GONE);
-            mServicesListView.setVisibility(View.GONE);
-            mPermissionsListView.setVisibility(View.GONE);
+            mServicesList.setVisibility(View.GONE);
+            mPermissionsList.setVisibility(View.GONE);
             mPermissionTextView.setVisibility(View.GONE);
+            mLine1.setVisibility(View.GONE);
+            mLine2.setVisibility(View.GONE);
+            mLine3.setVisibility(View.GONE);
         }
 
     }
@@ -144,5 +192,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public class UlTagHandler implements Html.TagHandler{
+        @Override
+        public void handleTag(boolean opening, String tag, Editable output,
+                              XMLReader xmlReader) {
+            if(tag.equals("ul") && !opening) output.append("\n");
+            if(tag.equals("li") && opening) output.append("\n\t•");
+        }
     }
 }
